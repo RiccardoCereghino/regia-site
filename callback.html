@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The code must not leave this page in a Referer header. -->
+<meta name="referrer" content="no-referrer">
+<title>regia sign-in</title>
+<style>
+  body { font: 16px/1.6 system-ui, sans-serif; max-width: 42rem; margin: 2rem auto; padding: 0 1rem; color: #222; background: #fff; }
+</style>
+</head>
+<body>
+<!--
+  The OAuth redirect for regia (RiccardoCereghino/regia#159). Meta accepts only an https redirect for
+  Threads, so the consent page sends the browser here. This page forwards the answer to regia's
+  one-shot listener on this computer, http://127.0.0.1:8723/callback, which checks the state.
+  It forwards only these parameters, sends nothing anywhere else, and loads no other file.
+-->
+<p id="msg">Forwarding the sign-in to regia on this computer.</p>
+<noscript><p>This page needs JavaScript to hand the sign-in to regia. Turn it on and reload.</p></noscript>
+<script>
+  (function () {
+    var KEEP = ["code", "state", "error", "error_reason", "error_description"];
+    var got = new URLSearchParams(window.location.search);
+    var out = new URLSearchParams();
+    KEEP.forEach(function (k) {
+      if (got.has(k)) out.set(k, got.get(k));
+    });
+    if (!out.has("state")) {
+      document.getElementById("msg").textContent = "This page has no sign-in answer to forward. Go back to the terminal.";
+      return;
+    }
+    window.location.replace("http://127.0.0.1:8723/callback?" + out.toString());
+  })();
+</script>
+</body>
+</html>
